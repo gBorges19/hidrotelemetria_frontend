@@ -1,5 +1,7 @@
 import React,{useState} from 'react';
 import api from '../../api'
+import {AllBackground, Title,TitleSmall,TitleTableOne,TitleTableTwo,TomatoButton,TableForm} from "./styles"
+
 
 function Home() {
 
@@ -25,10 +27,12 @@ function Home() {
     }
 
     return (
-
+        
+    <AllBackground>
       <div>
 
-          <div><h1>Pesquisa HidroTelemetria</h1></div>
+          <div><Title>Pesquisa HidroTelemetria ANA</Title></div>
+          <div><TitleSmall>Ferramenta de pesquisa de dados das estações de hidrotelemetria da Agência Nacional de Aguás (ANA)</TitleSmall></div>
 
           <div>
 
@@ -46,9 +50,9 @@ function Home() {
             </div>
 
             <div>
-
-                <input 
-
+            
+                <input
+                    
                     type = "text" 
                     value = {dataInicio}
                     onChange = {(event) => {setDataInicio(event.target.value)}}
@@ -73,9 +77,9 @@ function Home() {
 
             <div>
 
-                <button type = "button" onClick = {() => {handleOnClick()}}>
+                <TomatoButton type = "button" onClick = {() => {handleOnClick()}}>
                     Pesquisar
-                </button>
+                </TomatoButton>
 
             </div>
 
@@ -90,11 +94,11 @@ function Home() {
 
                     <tr>
 
-                        <td>Código Estação</td>
-                        <td>Data/Hora</td>
-                        <td>Chuva</td>
-                        <td>Nível</td>
-                        <td>Vazão</td>
+                        <TitleTableOne>Código Estação</TitleTableOne>
+                        <TitleTableTwo>Data/Hora</TitleTableTwo>
+                        <TitleTableOne>Chuva</TitleTableOne>
+                        <TitleTableTwo>Nível</TitleTableTwo>
+                        <TitleTableOne>Vazão</TitleTableOne>
 
                     </tr>
 
@@ -126,7 +130,9 @@ function Home() {
 
           </div>
 
-      </div>
+        </div>
+    </AllBackground>
+
 
     );
   }
