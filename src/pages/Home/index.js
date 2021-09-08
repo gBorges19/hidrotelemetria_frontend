@@ -1,141 +1,155 @@
-import React,{useState} from 'react';
-import api from '../../api'
-import {AllBackground, Title,TitleSmall,TitleTableOne,TitleTableTwo,TomatoButton,TableForm} from "./styles"
+import React, { useState } from 'react';
 
+import { 
+    
+    ContainerGlobal, 
+    ContainerPainel, 
+    Painel, 
+    SelectEstado, 
+    Titulo, 
+    TituloPainel, 
+    Button, 
+    Input 
+
+} from './styles';
+
+import api from '../../api'
 
 function Home() {
 
-    //div conteiner para colocar tudo dentro
-    //div para o titulo, <h1>
-    //div para os inputs
-    //div para cada input text
-    //3 inputs text 1 botao botao
-    //armazenar em um estado do componente {useState} useState(iniciar váriavel)
+    const[listaEstacoes, setListaEstacoes] = useState([]);
+    const[dadosEstacoes, setDadosEstacoes] = useState([]);
+    const[ufSelectList, setUfSelectList] = useState('');
+    const[ufSelectDados, setUfSelectDados] = useState('');
+    const[dataInicio, setDataInicio] = useState('');
+    const[dataFim, setDataFim] = useState('');
 
-    //retorna um array com 2 posições, primeiro a variavel e em segundo a função para setar um valor na váriavel
-    const [codEstacao, setCodEstacao] = useState('');
-    const [dataInicio, setDataInicio] = useState('');
-    const [dataFim, setDataFim] = useState('');
-    const[hidrotelemetria, setHidrotelemetria] = useState([]);
+    async function handleOnClickListaEstacoes(){
 
-    async function handleOnClick(){
-
-        const hidrotelemetriaResponse = await api.get(`telemetriaInfo/${codEstacao}/${dataInicio}/${dataFim}`);
-        const hidrotelemetriaData = hidrotelemetriaResponse.data.hidrotelemetria;
-        setHidrotelemetria(hidrotelemetriaData);
+        const listaResponse = await api.post('estacoes', {
+              download: true,
+              uf: ufSelectList
+          });
+        const listaData = listaResponse;
+        console.log(listaData.data)
+        setListaEstacoes([...listaEstacoes, listaData]);
+        const downloadResponse = await api.get(`download/${listaData.data.generatedFileName}`)
+        console.log(downloadResponse);
+        const url = window.URL.createObjectURL(new Blob([downloadResponse.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `estacoes_${ufSelectList}.csv`); //or any other extension
+        document.body.appendChild(link);
+        link.click();
 
     }
 
-    return (
-        
-    <AllBackground>
-      <div>
+    async function handleOnClickDadosEstacoes(){
 
-          <div><Title>Pesquisa HidroTelemetria ANA</Title></div>
-          <div><TitleSmall>Ferramenta de pesquisa de dados das estações de hidrotelemetria da Agência Nacional de Aguás (ANA)</TitleSmall></div>
+        console.log(`call ${ufSelectDados}`)
+        const dadosResponse = await api.post('dadosHidrometeorologicosPorUf',{
 
-          <div>
+            download: true,
+            uf: ufSelectDados,
+            data_inicio: dataInicio,
+            data_fim: dataFim
+        });
+        const dadosData = dadosResponse;
+        console.log(dadosData.data)
+        setDadosEstacoes([...dadosEstacoes, dadosData])
+        const downloadResponse = await api.get(`download/${dadosData.data.generatedFileName}`)
+        console.log(downloadResponse);
+        const url = window.URL.createObjectURL(new Blob([downloadResponse.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `dados_${ufSelectDados}.csv`); //or any other extension
+        document.body.appendChild(link);
+        link.click();
 
-            <div>
+    }
 
-                <input 
+    document.title = 'Hidrotelemetria PTI-ANA';
 
-                    type = "text" 
-                    value = {codEstacao}
-                    onChange = {(event) => {setCodEstacao(event.target.value)}}
-                    placeholder = {'Código da Estação'}
+ return (
 
-                />
+    <ContainerGlobal>
+        <Titulo>HIDROTELEMETRIA- ANA</Titulo>
+        <ContainerPainel>
+            <Painel>
+                <TituloPainel> Lista de Estações Telemétricas</TituloPainel>
+                <SelectEstado value = {ufSelectList} onChange={e => setUfSelectList(e.target.value)}>
+                        <option value="estado">STATE</option>
+                        <option value="ac">AC</option>
+                        <option value="al">AL</option>
+                        <option value="ap">AP</option>
+                        <option value="am">AM</option>
+                        <option value="ba">BA</option>
+                        <option value="ce">CE</option>
+                        <option value="df">DF</option>
+                        <option value="es">ES</option>
+                        <option value="go">GO</option>
+                        <option value="ma">MA</option>
+                        <option value="mt">MT</option>
+                        <option value="ms">MS</option>
+                        <option value="mg">MG</option>
+                        <option value="pa">PA</option>
+                        <option value="pb">PB</option>
+                        <option value="pr">PR</option>
+                        <option value="pe">PE</option>
+                        <option value="pi">PI</option>
+                        <option value="rj">RJ</option>
+                        <option value="rn">RN</option>
+                        <option value="rs">RS</option>
+                        <option value="ro">RO</option>
+                        <option value="rr">RR</option>
+                        <option value="sc">SC</option>
+                        <option value="sp">SP</option>
+                        <option value="se">SE</option>
+                        <option value="to">TO</option>
+                    </SelectEstado>
+                    <Button type = "button" onClick = {() => {handleOnClickListaEstacoes()}}>Obter Dados</Button>
+            </Painel>
+            <Painel>
+                <TituloPainel>Dados Hidrometeorológicos</TituloPainel>
+                <SelectEstado value = {ufSelectDados} onChange={k => setUfSelectDados(k.target.value)}>
+                        <option value="estado">STATE</option>
+                        <option value="ac">AC</option>
+                        <option value="al">AL</option>
+                        <option value="ap">AP</option>
+                        <option value="am">AM</option>
+                        <option value="ba">BA</option>
+                        <option value="ce">CE</option>
+                        <option value="df">DF</option>
+                        <option value="es">ES</option>
+                        <option value="go">GO</option>
+                        <option value="ma">MA</option>
+                        <option value="mt">MT</option>
+                        <option value="ms">MS</option>
+                        <option value="mg">MG</option>
+                        <option value="pa">PA</option>
+                        <option value="pb">PB</option>
+                        <option value="pr">PR</option>
+                        <option value="pe">PE</option>
+                        <option value="pi">PI</option>
+                        <option value="rj">RJ</option>
+                        <option value="rn">RN</option>
+                        <option value="rs">RS</option>
+                        <option value="ro">RO</option>
+                        <option value="rr">RR</option>
+                        <option value="sc">SC</option>
+                        <option value="sp">SP</option>
+                        <option value="se">SE</option>
+                        <option value="to">TO</option>
+                    </SelectEstado>
+                    <Input type = "text" placeholder="Data Inicio:   YYYY-MM-DD" onChange = {(event) => {setDataInicio(event.target.value)}}></Input>
+                    <Input type = "text" placeholder="Data Fim:      YYYY-MM-DD" onChange = {(event) => {setDataFim(event.target.value)}}></Input>
+                    <Button type = "button" onClick = {() => {handleOnClickDadosEstacoes()}}>Obter Dados</Button>
+            </Painel>
+        </ContainerPainel>
+    </ContainerGlobal>
 
-            </div>
+ )
 
-            <div>
-            
-                <input
-                    
-                    type = "text" 
-                    value = {dataInicio}
-                    onChange = {(event) => {setDataInicio(event.target.value)}}
-                    placeholder = {'Data Início'}
+}
 
-                />
-
-            </div>
-
-            <div>
-
-                <input 
-
-                    type = "text" 
-                    value = {dataFim}
-                    onChange = {(event) => {setDataFim(event.target.value)}}
-                    placeholder = {'Data Fim'}
-
-                />
-
-            </div>
-
-            <div>
-
-                <TomatoButton type = "button" onClick = {() => {handleOnClick()}}>
-                    Pesquisar
-                </TomatoButton>
-
-            </div>
-
-
-          </div>
-
-          <div>
-
-          <table>
-
-                <thead>
-
-                    <tr>
-
-                        <TitleTableOne>Código Estação</TitleTableOne>
-                        <TitleTableTwo>Data/Hora</TitleTableTwo>
-                        <TitleTableOne>Chuva</TitleTableOne>
-                        <TitleTableTwo>Nível</TitleTableTwo>
-                        <TitleTableOne>Vazão</TitleTableOne>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {hidrotelemetria && hidrotelemetria.map((obj) => {
-
-                        return(
-
-                            <tr key = {obj.DataHora}>
-
-                                <td>{obj.CodEstacao}</td>
-                                <td>{obj.DataHora}</td>
-                                <td>{obj.Chuva}</td>
-                                <td>{obj.Nivel}</td>
-                                <td>{obj.Vazao}</td>
-
-                            </tr>
-
-                        )
-
-                    })}
-
-                </tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-    </AllBackground>
-
-
-    );
-  }
-
-
-  export default Home;
+export default Home;

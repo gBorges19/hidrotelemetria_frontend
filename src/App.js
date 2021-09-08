@@ -1,14 +1,20 @@
 import './App.css';
-import Home from './pages/Home'
-import Hello from './pages/Hello'
+import {  BrowserRouter } from 'react-router-dom';
+import Routes from './Routes'
 import GlobalStyle from './assets/styles/global';
+import HeaderComponent from './assets/header';
+import FooterComponent from './assets/footer';
 
 function App() {
   return (
-    <div>
-        <Hello></Hello>
-        <GlobalStyle />
-    </div>
+    
+    <BrowserRouter>
+      <HeaderComponent />
+      <Routes />
+      <FooterComponent />
+      <GlobalStyle />
+    </BrowserRouter>
+
   );
 }
 
